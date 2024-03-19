@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"flag"
 	"fmt"
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
@@ -18,15 +19,17 @@ import (
 	"sync"
 )
 
+var cwd string
+
 var (
 	titleStyle = lipgloss.NewStyle().
-		Foreground(color.Yellow)
+			Foreground(color.Yellow)
 
 	scannedFileStyle = lipgloss.NewStyle().
-		Foreground(color.Indigo)
+				Foreground(color.Indigo)
 
 	spinnerStyle = lipgloss.NewStyle().
-		Foreground(color.Indigo)
+			Foreground(color.Indigo)
 )
 
 type model struct {
@@ -49,10 +52,7 @@ func newModel() model {
 		keyMap = NewKeyMap()
 	)
 
-	var cwd string
-
-	if len(os.Args) == 2 {
-		cwd = os.Args[1]
+	if len(cwd) > 0 {
 		if _, err := os.Stat(cwd); os.IsNotExist(err) {
 			panic("The provided directory does not exist")
 		}
@@ -290,7 +290,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.showSpinner = true
 
 			return m, waitForFileScan(m.scanner)
-		
+
 		case scan.FileDiskScanEvenType:
 			cwd := titleStyle.Render(m.directory.Cwd)
 			scannedFile := scannedFileStyle.Render(msg.ScannedFile.Path)
@@ -349,6 +349,8 @@ func (m model) View() string {
 
 func Execute() {
 	// os.Setenv("DEBUG", "1")
+	flag.StringVar(&cwd, "d", "", "The directory to scan")
+	flag.Parse()
 
 	if len(os.Getenv("DEBUG")) > 0 {
 		f, err := tea.LogToFile("debug.log", "debug")
