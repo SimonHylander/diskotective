@@ -13,3 +13,7 @@ curl https://raw.githubusercontent.com/simonhylander/diskotective/main/install.s
 diskotective
 diskotective -d /path/to/directory
 ```
+
+## Demo
+
+<img width="750" src="demo.gif" />
